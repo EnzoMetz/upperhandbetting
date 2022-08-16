@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
+</head>
+<style>
+  #announcements{
+    margin-top: 60px;
+  }
+</style>
+<body>
+    <nav class="navbar navbar-expand-lg fixed-top navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'firstapp:index' %}">
+              <img src="{% static 'images/upperhandlogo.png' %}" alt="" width="292" height="40">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#">Home</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="#">NFL Bet Finder</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'firstapp:formpage' %}">NBA Bet Finder</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'firstapp:resources' %}">Resources</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">FAQ's</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+     
+
+    <div class="container py-4" id="announcements">
+        <div class="p-5 mb-4 bg-light border rounded-3">
+          <div class="container-fluid py-5">
+            <h1 class="display-5 fw-bold">Want to gain an edge on the competition?</h1>
+            <p class="col-md-8 fs-4">Our free Bet Finder tool allows you to easily and quickly find NBA Player Props that fit criteria that you input. You come up with an algorithm. We find the NBA Player Props that match it. It's that easy.</p>
+            <a class="btn btn-primary btn-lg" href="betfinder.html" type="button" >Try it out</a>
+          </div>
+        </div>
+    
+        <div class="row align-items-md-stretch">
+          <div class="col-md-6">
+            <div class="h-100 p-5 text-bg-dark rounded-3">
+              <h2>Pro Subscription</h2>
+              <p>For only $3/month you can gain access to all of the features that Upper Hand Betting has to offer. Test your algorithms on over 6 months of NBA games, track your progress, and so much more.</p>
+              <button class="btn btn-outline-light" type="button">Register</button>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="h-100 p-5 bg-light border rounded-3">
+              <h2>Sports Betting 101</h2>
+              <p>New to sports betting? Check out the Resources tab for some basic training on how to place a bet, what algorithmic betting is, and tons more. Knowledge is power and we're all in this together, so let's beat the books!</p>
+              <button class="btn btn-outline-secondary" type="button">Learn More</button>
+            </div>
+          </div>
+        </div>
+    
+        <footer class="pt-3 mt-4 text-muted border-top">
+          © 2022
+        </footer>
+      </div>
+   
+</body>
+</html>
