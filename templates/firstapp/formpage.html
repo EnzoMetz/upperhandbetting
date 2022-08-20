@@ -63,40 +63,41 @@
                             <p>Drag any of the variables from the 4 categories in order to create a conditional statement to serve as the algorithm. </p>
                         </div>
                     </div>
-                    <div class="col-lg-2" id="cells">
+                    <div class="col-lg-4" id="cells">
                         <div class="h-100 p-5 bg-light border rounded-3">
                             <h4>Season Averages</h4>
                             <table>
                                 <tr>
-                                    <td><span draggable="true" clone="true">SPPG</span></td>
+                                    <td><span draggable="true" clone="true">ppg</span></td>
                                 </tr>
                                 <tr>
-                                    <td><span draggable="true" clone="true">SAPG</span></td>   
+                                    <td><span draggable="true" clone="true">apg</span></td>   
                                 </tr>
                                 <tr>
-                                    <td><span draggable="true" clone="true">SRPG</span></td>                                  
+                                    <td><span draggable="true" clone="true">rpg</span></td>                                  
                                 </tr>
                                 <tr>
-                                    <td><span draggable="true" clone="true">SSPG</span></td>
+                                    <td><span draggable="true" clone="true">spg</span></td>
                                 </tr>
                                 <tr>
-                                    <td><span draggable="true" clone="true">SBPG</span></td>
+                                    <td><span draggable="true" clone="true">bpg</span></td>
                                 </tr>
                                 <tr>
-                                    <td><span draggable="true" clone="true">STPG</span></td>
+                                    <td><span draggable="true" clone="true">tpg</span></td>
                                 </tr>
                                 <tr>
-                                    <td><span draggable="true" clone="true">SMPG</span></td>
+                                    <td><span draggable="true" clone="true">mpg</span></td>
                                 </tr>
                                 <tr>
-                                    <td><span draggable="true" clone="true">SFG%</span></td>
+                                    <td><span draggable="true" clone="true">fg_percentage</span></td>
                                 </tr>
                                 <tr>
-                                    <td><span draggable="true" clone="true">S3PT%</span></td>
+                                    <td><span draggable="true" clone="true">three_point_percentage</span></td>
                                 </tr>
                             </table>
                         </div>
                     </div>
+                    <!-- 
                     <div class="col-lg-2" id="cells">
                         <div class="h-100 p-5 bg-light border rounded-3">
                             <h4>10 Game Averages</h4>
@@ -123,6 +124,7 @@
                             </table>
                         </div>
                     </div>
+                -->
                     <div class="col-lg-2" id="cells">
                         <div class="h-100 p-5 bg-light border rounded-3">
                             <h4>Operators</h4>
@@ -193,6 +195,25 @@
                 </form>
                 </div>
             </div>
+            <div>
+                <br>
+                <br>
+                <h2>Matching Players</h2>
+                <br>
+                <h4>Algorithm: {{algorithm}}</h4>
+                <table class="border border-dark">
+                    <tbody>
+                        {% for player in matchingPlayers%}
+                        <tr>
+                            <td>{{player.name}}</td>
+                            <td>{{player.description}}</td>
+                            <td>{{player.overUnder}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
             <footer class="pt-3 mt-4 text-muted border-top">
                 © 2022
               </footer>

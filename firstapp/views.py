@@ -2,6 +2,9 @@ from distutils.util import convert_path
 from django.shortcuts import render
 from django.http import HttpResponse
 from . import forms
+import time
+from .models import DisplayAlgorithm
+from .models import PlayersToDisplay
 # Create your views here.
 
 import requests
@@ -10,6 +13,7 @@ from datetime import datetime
 from datetime import date
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 
 def index(request):
@@ -20,31 +24,26 @@ def resources(request):
 
 def form_name_view(request):
     form = forms.FormName()
+    algorithm = ""
+    matchingPlayers = []
 
     if request.method == 'POST':
         form = forms.FormName(request.POST)
 
         if form.is_valid():
-            print("SUCCESS")
+            matchingPlayers = []
             date= form.cleaned_data['date_stat'] 
-            #algorithm = form.cleaned_data['algorithm_field']
-            #prop = form.cleaned_data['prop_stat']
-            #list_of_players = nba_bet_grabber(date, prop)
-            list_poop = []
-            list_poop.append(["Lebron James", "Lakers-SF", "30", "Lebron", "James"])
-            toCheck = scrape_player_data(list_poop, date)
+            algorithm = form.cleaned_data['algorithm_field']
+            prop = form.cleaned_data['prop_stat']
+            list_of_players = nba_bet_grabber(date, prop)
+            toCheck = scrape_player_data(list_of_players, date, algorithm)
+            counter = 0
             for p in toCheck:
-                print(p[1])
-                print(p[2])
-                print(p[3])
-                print(p[4])
-                print(p[5])
-                print(p[6])
-                print(p[7])
-                print(p[8])
+                temp = PlayersToDisplay(p[0], p[1], p[2])
+                matchingPlayers.append(temp)
+                counter += 1
 
-
-    return render(request, 'firstapp/formpage.html', {'form':form})
+    return render(request, 'firstapp/formpage.html', {'form':form, 'matchingPlayers':matchingPlayers, 'algorithm': algorithm})
 
 def nba_bet_grabber(date_to_use, prop) :
     players = []
@@ -54,21 +53,34 @@ def nba_bet_grabber(date_to_use, prop) :
         stat = "three point shots made"
     else:
         stat = prop
-
-    url += date_to_use
+    url += str(date_to_use)
     s=Service(ChromeDriverManager().install())
-    driver = webdriver.Chrome(service=s)
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")
+    WINDOW_SIZE = "1920,1080"
+    chrome_options.add_argument("--window-size=%s" % WINDOW_SIZE)
+    driver = webdriver.Chrome(service=s, chrome_options=chrome_options)
     driver.get(url)
     soup = BeautifulSoup(driver.page_source, 'html.parser')
-
+    
     table = soup.find('table')
     table2 = table.find('tbody')
     table3 = table2.find_all('tr')
+    if (not table3) :
+        print("no table")
+        listReturn = []
+        listReturn.append(["Lebron James", "Lakers-SF", "O/U 30 points", "points", "Lebron", "James"])
+        listReturn.append(["Giannis Antetokounmpo", "Bucks-PF", "O/U 30 points", "points", "Giannis", "Antetokounmpo"])
+        listReturn.append(["James Harden", "Sixers-PG", "O/U 25 points", "points", "James", "Harden"])
+        listReturn.append(["Joel Embiid", "Sixers-C", "O/U 30 points", "points", "Joel", "Embiid"])
+        listReturn.append(["Luka Doncic", "Mavericks-PG", "O/U 30 points", "points", "Luka", "Doncic"])
+        return listReturn
 
     for player in table3:
         # Name
         first_name_tag = player.find('span', {'class':'yearbook-block__title--block player-name player-name--desktop'})
         first_name = first_name_tag.text if first_name_tag else ''
+        
 
         last_name_tag = player.find('span', {'class':'yearbook-block__title--block player-name'})
         last_name = last_name_tag.text if last_name_tag else ''
@@ -82,17 +94,15 @@ def nba_bet_grabber(date_to_use, prop) :
         # Over/Under Line
         ou_tag = player.find('span', {'class':'ou-line__line'})
         ou_line = ou_tag.text if ou_tag else ''
-
-        players.append([name, description, ou_line, first_name, last_name])
-        holder = players[numPlayers]
-        print(holder[0], holder[1],":", holder[2], stat)
+        ou_line = "O/U " + ou_line + " " + stat
+        players.append([name, description, ou_line, stat, first_name, last_name])
         numPlayers+=1
     
     return players
 
 def name_converter(f_name, l_name) :
     if len(l_name) >= 6 :
-        username = l_name[0:6] + f_name[0:2] + "01"
+        username = l_name[0:5] + f_name[0:2] + "01"
     else :
         username = l_name[0:len(l_name)] + f_name[0:2] + "01"
 
@@ -105,20 +115,16 @@ def year(date):
     else :
         return str(date.year + 1)
 
-def scrape_player_data(player_list, date2Use):
+def scrape_player_data(player_list, date2Use, algorithm):
     toReturn=[]
     for player in player_list:
-
-        bball_ref_url = "https://www.basketball-reference.com/players/" + name_converter(player[3], player[4]) + year(date2Use)
+        bball_ref_url = "https://www.basketball-reference.com/players/" + name_converter(player[4], player[5]) + year(date2Use)
         response = requests.get(bball_ref_url)
         data = response.text
         soup1 = BeautifulSoup(data, 'html.parser')
-        first = soup1.find('div', {'id':'content'})
-        second = first.find('div', {'id':'all_pgl_basic'})
-        stats1 = second.find('table', {'id':'pgl_basic'})
+        stats1 = soup1.find('table', {'id':'pgl_basic'})
         stats2 = stats1.find('tbody')
         stats = stats2.find_all('tr')
-
         ppg = 0
         rpg = 0
         apg = 0
@@ -128,6 +134,8 @@ def scrape_player_data(player_list, date2Use):
         mpg = 0
         fg_percentage = 0
         three_point_percentage = 0
+        threePointTot = 0
+        threePointA = 0
 
         games = 0
 
@@ -148,7 +156,8 @@ def scrape_player_data(player_list, date2Use):
                         tov = game.find('td', {'data-stat':'tov'}).text
                         min = game.find('td', {'data-stat':'mp'}).text
                         fg = game.find('td', {'data-stat':'fg_pct'}).text
-                        threeP = game.find('td', {'data-stat':'fg3_pct'}).text
+                        threeP = game.find('td', {'data-stat':'fg3'}).text
+                        threePA = game.find('td', {'data-stat':'fg3a'}).text
 
                         games += 1
                         ppg += int(pts)
@@ -158,8 +167,10 @@ def scrape_player_data(player_list, date2Use):
                         bpg += int(blks)
                         tpg += int(tov)
                         mpg += timeToMin(min)
-                        #fg_percentage += int(fg)
-                        #three_point_percentage += int(threeP)
+                        fg_percentage += float(fg)
+                        threePointTot += int(threeP)
+                        threePointA += int(threePA)
+                        
                     else :
                         pts = 0
                         rebs = 0
@@ -182,14 +193,13 @@ def scrape_player_data(player_list, date2Use):
             tpg /= games
             mpg /= games
             fg_percentage /= games
-            three_point_percentage /= games
-
-        toReturn.append([player_list[0], ppg, rpg, apg, spg, bpg, tpg, mpg, fg_percentage, three_point_percentage])
+            three_point_percentage = threePointTot / threePointA
+        if (eval(algorithm)):
+            toReturn.append(player)
     return toReturn
 
 def timeToMin(time) :
     time = str(time)
-    print(time)
 
     min = time[0:(len(time)-3 )]
     min = int(min)

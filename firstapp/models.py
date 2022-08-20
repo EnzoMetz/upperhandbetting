@@ -20,4 +20,12 @@ class AccessRecord(models.Model):
 
     def __str__(self):
         return str(self.date)
+        
+class DisplayAlgorithm :
+    algorithm : str
 
+class PlayersToDisplay():
+    def __init__(self, name, description, overUnder):
+        self.name = name
+        self.description = description
+        self.overUnder = overUnder
